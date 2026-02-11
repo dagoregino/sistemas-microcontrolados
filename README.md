@@ -1,3 +1,1 @@
-Dagoberto Regino Lejarde
-Dylan Valderrama Baquero
-Marcela Mercado Rivera
+Dagoberto Regino Lejarde, Dylan Valderrama Baquero, Marcela Mercado Rivera
