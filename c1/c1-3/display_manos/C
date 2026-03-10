@@ -1,0 +1,197 @@
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+
+#define SA 5
+#define SB 4
+#define SC 19
+#define SD 25
+#define SE 26
+#define SF 33
+#define SG 32
+#define SP 14
+#define D2_B 27
+#define D2_C 23
+void escribir(char num)
+{
+  switch (num)
+{
+  case '0':
+    gpio_set_level(SA, 1);
+    gpio_set_level(SB, 1);
+    gpio_set_level(SC, 1);
+    gpio_set_level(SD, 1);
+    gpio_set_level(SE, 1);
+    gpio_set_level(SF, 1);
+    gpio_set_level(SG, 0);
+    break;
+
+  case '1':
+    gpio_set_level(SA, 0);
+    gpio_set_level(SB, 1);
+    gpio_set_level(SC, 1);
+    gpio_set_level(SD, 0);
+    gpio_set_level(SE, 0);
+    gpio_set_level(SF, 0);
+    gpio_set_level(SG, 0);
+    break;
+
+  case '2':
+    gpio_set_level(SA, 1);
+    gpio_set_level(SB, 1);
+    gpio_set_level(SC, 0);
+    gpio_set_level(SD, 1);
+    gpio_set_level(SE, 1);
+    gpio_set_level(SF, 0);
+    gpio_set_level(SG, 1);
+    break;
+
+  case '3':
+    gpio_set_level(SA, 1);
+    gpio_set_level(SB, 1);
+    gpio_set_level(SC, 1);
+    gpio_set_level(SD, 1);
+    gpio_set_level(SE, 0);
+    gpio_set_level(SF, 0);
+    gpio_set_level(SG, 1);
+    break;
+
+  case '4':
+    gpio_set_level(SA, 0);
+    gpio_set_level(SB, 1);
+    gpio_set_level(SC, 1);
+    gpio_set_level(SD, 0);
+    gpio_set_level(SE, 0);
+    gpio_set_level(SF, 1);
+    gpio_set_level(SG, 1);
+    break;
+
+  case '5':
+    gpio_set_level(SA, 1);
+    gpio_set_level(SB, 0);
+    gpio_set_level(SC, 1);
+    gpio_set_level(SD, 1);
+    gpio_set_level(SE, 0);
+    gpio_set_level(SF, 1);
+    gpio_set_level(SG, 1);
+    break;
+
+  case '6':
+    gpio_set_level(SA, 1);
+    gpio_set_level(SB, 0);
+    gpio_set_level(SC, 1);
+    gpio_set_level(SD, 1);
+    gpio_set_level(SE, 1);
+    gpio_set_level(SF, 1);
+    gpio_set_level(SG, 1);
+    break;
+
+  case '7':
+    gpio_set_level(SA, 1);
+    gpio_set_level(SB, 1);
+    gpio_set_level(SC, 1);
+    gpio_set_level(SD, 0);
+    gpio_set_level(SE, 0);
+    gpio_set_level(SF, 0);
+    gpio_set_level(SG, 0);
+    break;
+
+  case '8':
+    gpio_set_level(SA, 1);
+    gpio_set_level(SB, 1);
+    gpio_set_level(SC, 1);
+    gpio_set_level(SD, 1);
+    gpio_set_level(SE, 1);
+    gpio_set_level(SF, 1);
+    gpio_set_level(SG, 1);
+    break;
+
+  case '9':
+    gpio_set_level(SA, 1);
+    gpio_set_level(SB, 1);
+    gpio_set_level(SC, 1);
+    gpio_set_level(SD, 1);
+    gpio_set_level(SE, 0);
+    gpio_set_level(SF, 1);
+    gpio_set_level(SG, 1);
+    break;
+
+  case 'A':   // 10 dedos
+    gpio_set_level(SA, 1);
+    gpio_set_level(SB, 1);
+    gpio_set_level(SC, 1);
+    gpio_set_level(SD, 0);
+    gpio_set_level(SE, 1);
+    gpio_set_level(SF, 1);
+    gpio_set_level(SG, 1);
+    break;
+
+  default:
+    gpio_set_level(SA, 0);
+    gpio_set_level(SB, 0);
+    gpio_set_level(SC, 0);
+    gpio_set_level(SD, 0);
+    gpio_set_level(SE, 0);
+    gpio_set_level(SF, 0);
+    gpio_set_level(SG, 0);
+    break;
+}
+}
+void display2_on()
+{
+    gpio_set_level(D2_B, 1);
+    gpio_set_level(D2_C, 1);
+}
+
+void display2_off()
+{
+    gpio_set_level(D2_B, 0);
+    gpio_set_level(D2_C, 0);
+}
+void app_main()
+{
+  gpio_reset_pin(SA);
+  gpio_reset_pin(SB);
+  gpio_reset_pin(SC);
+  gpio_reset_pin(SD);
+  gpio_reset_pin(SE);
+  gpio_reset_pin(SF);
+  gpio_reset_pin(SG);
+  gpio_reset_pin(SP);
+  gpio_reset_pin(D2_B);
+  gpio_reset_pin(D2_C);
+
+  gpio_set_direction(D2_B, GPIO_MODE_OUTPUT);
+  gpio_set_direction(D2_C, GPIO_MODE_OUTPUT);
+  gpio_set_direction(SA, GPIO_MODE_OUTPUT);
+  gpio_set_direction(SB, GPIO_MODE_OUTPUT);
+  gpio_set_direction(SC, GPIO_MODE_OUTPUT);
+  gpio_set_direction(SD, GPIO_MODE_OUTPUT);
+  gpio_set_direction(SE, GPIO_MODE_OUTPUT);
+  gpio_set_direction(SF, GPIO_MODE_OUTPUT);
+  gpio_set_direction(SG, GPIO_MODE_OUTPUT);
+  gpio_set_direction(SP, GPIO_MODE_OUTPUT);
+  display2_off();
+
+  
+
+char num = '0';
+while(1)
+{
+    num = getchar();
+
+    if(num == ':')   // 10 dedos
+    {
+        escribir('0');   // primer display muestra 0
+        display2_on();   // segundo display muestra 1
+    }
+    else if(num >= '0' && num <= '9')
+    {
+        escribir(num);
+        display2_off();  // apagar segundo display
+    }
+
+    vTaskDelay(10 / portTICK_PERIOD_MS);
+}
+}
