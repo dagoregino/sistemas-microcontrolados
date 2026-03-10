@@ -1,0 +1,85 @@
+import serial
+import time
+
+ser = serial.Serial ('COM7', 115200,timeout=1)
+
+import cv2
+import mediapipe as mp
+import time
+
+cap = cv2.VideoCapture(0)
+mpHands = mp.solutions.hands
+hands = mpHands.Hands(max_num_hands=2)
+mpDraw = mp.solutions.drawing_utils
+pTime = 0
+cTime = 0
+
+cv2.namedWindow("image", cv2.WND_PROP_FULLSCREEN)
+cv2.setWindowProperty("image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+last_value = -1
+stable_count = 0
+
+while True:
+    success, img = cap.read()
+    img = cv2.flip(img, 1)
+    imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    results = hands.process(imgRGB)
+
+    if results.multi_hand_landmarks:
+
+        total_fingers = 0
+
+        for handLms, handType in zip(results.multi_hand_landmarks, results.multi_handedness):
+
+            label = handType.classification[0].label
+
+            mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
+
+            fingers = 0
+
+            # Pulgar
+            if label == "Right":
+                if handLms.landmark[4].x < handLms.landmark[3].x:
+                    fingers += 1
+            else:
+                if handLms.landmark[4].x > handLms.landmark[3].x:
+                    fingers += 1
+
+            # Índice
+            if handLms.landmark[8].y < handLms.landmark[6].y:
+                fingers += 1
+
+            # Medio
+            if handLms.landmark[12].y < handLms.landmark[10].y:
+                fingers += 1
+
+            # Anular
+            if handLms.landmark[16].y < handLms.landmark[14].y:
+                fingers += 1
+
+            # Meñique
+            if handLms.landmark[20].y < handLms.landmark[18].y:
+                fingers += 1
+
+            total_fingers += fingers
+
+        if total_fingers == 10:
+                ser.write(b':')
+                time.sleep(0.05)
+        else:
+                ser.write(str(total_fingers).encode())
+                time.sleep(0.05)
+    else:
+        ser.write(b'0')
+        time.sleep(0.05)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+    cTime = time.time()
+    fps = 1/(cTime-pTime)
+    pTime = cTime
+
+    cv2.putText(img, str(int(fps)), (10,70), cv2.FONT_HERSHEY_PLAIN, 3, (255,255,255), 3)
+
+    cv2.imshow("image" , img)
+    cv2.waitKey(1)
